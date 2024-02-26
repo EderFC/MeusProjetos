@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #333;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+
+  <script>
+    const board = document.getElementById('board');
+    let currentPlayer = 'X';
+    const cells = Array.from({ length: 9 });
+
+    function initializeGame() {
+      board.innerHTML = '';
+      cells.fill(null);
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleCellClick);
+        board.appendChild(cell);
+      }
+    }
+
+    function handleCellClick(event) {
+      const index = event.target.dataset.index;
+
+      if (cells[index] === null) {
+        cells[index] = currentPlayer;
+        event.target.innerText = currentPlayer;
+        
+        if (checkWinner()) {
+          alert(`Player ${currentPlayer} wins!`);
+          initializeGame();
+        } else if (cells.every(cell => cell !== null)) {
+          alert('It\'s a draw!');
+          initializeGame();
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]              // Diagonals
+      ];
+
+      return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
+        return cells[a] !== null && cells[a] === cells[b] && cells[a] === cells[c];
+      });
+    }
+
+    initializeGame();
+  </script>
+</body>
+</html>
